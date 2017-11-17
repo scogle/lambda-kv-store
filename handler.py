@@ -7,13 +7,9 @@ Author: Scott Ogle <scottogle@gmail.com>
 """
 
 import json
-import boto3
+from boto3 import resource as aws_resource
+from boto3.dynamodb.conditions import Key as DynamoKey
 from decimal import Decimal
-
-from pprint import pprint
-
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('nike-test')
 
 class DecimalEncoder(json.JSONEncoder):
     """
@@ -24,6 +20,14 @@ class DecimalEncoder(json.JSONEncoder):
         if isinstance(o, Decimal):
             return float(o)
         return super(DecimalEncoder, self).default(o)
+
+
+def get_table():
+    """ Wrapping this in a helper function to make the code more testable
+        @TODO: Could probably be moved into it's own class
+    """
+    dynamodb = aws_resource('dynamodb')
+    return dynamodb.Table('nike-test')
 
 
 def form_http_response(status, body):
@@ -46,7 +50,7 @@ def get_all_keys(event, context):
     """
     List all key/value pairs
     """
-    db_response = table.scan()
+    db_response = get_table().scan()
     items = db_response['Items']
 
     return form_http_response(200, items)
@@ -60,8 +64,8 @@ def get_key(event, context):
     """
     key = event['pathParameters']['key']
 
-    db_response = table.query(
-        KeyConditionExpression=boto3.dynamodb.conditions.Key('key').eq(key)
+    db_response = get_table().query(
+        KeyConditionExpression=DynamoKey('key').eq(key)
     )
     items = db_response['Items']
     if len(items) == 0:
@@ -79,7 +83,7 @@ def add_key(event, context):
     key = event['pathParameters']['key']
     value = event.get('queryStringParameters', {}).get('value', None)
 
-    db_response = table.put_item(
+    db_response = get_table().put_item(
         Item={
             'key': key,
             'value': value
@@ -101,12 +105,10 @@ def update_key(event, context):
     value = event.get('queryStringParameters', {}).get('value', None)
 
     if value is None:
-        return {
-            "statusCode": 400,
-            "body": {"error": "Missing required query string parameter 'value'"}
-        }
+        body = {"error": "Missing required querystring parameter 'value'"}
+        return form_http_response(400, body)
 
-    db_response = table.update_item(
+    db_response = get_table().update_item(
         Key={"key": key},
         AttributeUpdates={
             "value": {
@@ -127,7 +129,7 @@ def delete_key(event, context):
     """
     key = event['pathParameters']['key']
 
-    table.delete_item(
+    get_table().delete_item(
         Key={
             'key': key
         }
