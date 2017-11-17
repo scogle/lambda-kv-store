@@ -1,0 +1,80 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: nike-test
+
+provider:
+  name: aws
+  runtime: python3.6
+
+functions:
+  ping:
+    # Simple function to check the status of the service
+    handler: handler.ping
+    events:
+      - http: GET ping
+
+  get_all_keys:
+    # Get all keys or a specific key
+    handler: handler.get_all_keys
+    events:
+      - http: GET v1/keys
+      - stream: arn:aws:dynamodb:us-east-1:727504699761:table/nike-test/stream/2017-11-16T22:04:05.430
+
+  get_key:
+    # Get all keys or a specific key
+    handler: handler.get_key
+    events:
+      - http: GET v1/keys/{key}
+        request:
+          parameters:
+            paths:
+              key: true
+      - stream: arn:aws:dynamodb:us-east-1:727504699761:table/nike-test/stream/2017-11-16T22:04:05.430
+
+  add_key:
+    # Adds a key to the store
+    handler: handler.add_key
+    events:
+      - http: POST v1/keys/{key}
+        request:
+          parameters:
+            querystrings:
+              value: true
+            paths:
+              key: true
+      - stream: arn:aws:dynamodb:us-east-1:727504699761:table/nike-test/stream/2017-11-16T22:04:05.430
+
+  update_key:
+    # Updates the value of a single key
+    handler: handler.update_key
+    events:
+      - http: PUT v1/keys/{key}
+        request:
+          parameters:
+            querystrings:
+              value: true
+            paths:
+              key: true
+      - stream: arn:aws:dynamodb:us-east-1:727504699761:table/nike-test/stream/2017-11-16T22:04:05.430
+
+  delete_key:
+    # Deletes a single key/value pair
+    handler: handler.delete_key
+    events:
+      - http: DELETE v1/keys/{key}
+        request:
+          parameters:
+            paths:
+              key: true
+      - stream: arn:aws:dynamodb:us-east-1:727504699761:table/nike-test/stream/2017-11-16T22:04:05.430
