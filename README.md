@@ -1,5 +1,7 @@
 # Lambda KV Store
 
+[![Build Status](https://travis-ci.org/scogle/lambda-kv-store.svg?branch=master)](https://travis-ci.org/scogle/lambda-kv-store)
+
 A simple KV store written in Python 3.6 using AWS Lambda and DynamoDB
 
 ### Endpoints
