@@ -67,7 +67,6 @@ class TestAPIRoutes(unittest.TestCase):
         self.assertEqual(res, {"message": "success"})
 
 
-
 if __name__ == '__main__':
     # Add a key/value so we can be sure there's at least one for testing
     requests.post(

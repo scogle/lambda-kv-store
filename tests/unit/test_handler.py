@@ -104,8 +104,7 @@ class TestHandler(unittest.TestCase):
         mock_form_http_response.assert_called_with(200, {"message": "success"})
 
 
-
-
-
 if __name__ == '__main__':
     unittest.main()
+
+
