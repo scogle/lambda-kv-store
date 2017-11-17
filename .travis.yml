@@ -15,7 +15,7 @@ before_script:
     - ln -s "$TRAVIS_BUILD_DIR" _pypath/nike-test
 script:
     - python -m unittest discover -s tests/integration -v
-    - coverage run --source=nike-test -m unittest discover -s tests/unit -v
+    - coverage run --source=handler -m unittest discover -s tests/unit -v
     - coverage report
 after_failure:
     - cat $LOG_PATH/*.log
